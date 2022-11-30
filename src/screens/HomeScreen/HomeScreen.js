@@ -8,12 +8,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = () => {
   const navigation = useNavigation();
-  const axios = Axios.create({
-    baseURL: Config.API_URL,
-    headers: {
-      Authorization: `Bearer ${AsyncStorage.getItem('token')}`,
-    },
-  });
+  // const axios = Axios.create({
+  //   baseURL: Config.API_URL,
+  //   headers: {
+  //     Authorization: `Bearer ${AsyncStorage.getItem('token')}`,
+  //   },
+  // });
   const onSignOut = () => {
     AsyncStorage.removeItem('token');
     navigation.navigate('SignIn');

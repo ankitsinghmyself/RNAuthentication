@@ -6,7 +6,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Logo from '../../../assets/images/logo.png';
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
@@ -16,22 +16,24 @@ import {useForm} from 'react-hook-form';
 import {Config} from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'react-native-axios';
+
 const SignInScreen = () => {
   const {height} = useWindowDimensions();
   const navigation = useNavigation();
 
   const {control, handleSubmit, errors} = useForm();
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        navigation.navigate('Home');
+      }
+    };
+    checkToken();
+  }, [navigation]);
+
   const onSignIn = data => {
     //user already exists
-    axios
-      .post(`${Config.API_URL}/auth/login`, data)
-      .then(response => {
-        AsyncStorage.setItem('token', response.data.token);
-        navigation.navigate('Home');
-      })
-      .catch(error => {
-        Alert.alert('Error', error.response.data.message);
-      });
     //validation
     if (data.email === '' || data.password === '') {
       Alert.alert('Please fill all the fields');
