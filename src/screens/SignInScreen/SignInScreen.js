@@ -4,6 +4,7 @@ import {
   Image,
   useWindowDimensions,
   ScrollView,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import Logo from '../../../assets/images/logo.png';
@@ -12,17 +13,43 @@ import CustomButton from '../../components/CustomButton';
 import SocialSignInButtons from '../../components/SocialSignInButtons';
 import {useNavigation} from '@react-navigation/native';
 import {useForm} from 'react-hook-form';
-
+import {Config} from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'react-native-axios';
 const SignInScreen = () => {
   const {height} = useWindowDimensions();
   const navigation = useNavigation();
 
   const {control, handleSubmit, errors} = useForm();
   const onSignIn = data => {
+    //user already exists
+    axios
+      .post(`${Config.API_URL}/auth/login`, data)
+      .then(response => {
+        AsyncStorage.setItem('token', response.data.token);
+        navigation.navigate('Home');
+      })
+      .catch(error => {
+        Alert.alert('Error', error.response.data.message);
+      });
     //validation
-    console.log(data);
-
-    // navigation.navigate('Home');
+    if (data.email === '' || data.password === '') {
+      Alert.alert('Please fill all the fields');
+      return;
+    }
+    //sign in
+    axios
+      .post(`${Config.API_URL}/auth/login`, {
+        email: data.email,
+        password: data.password,
+      })
+      .then(async response => {
+        await AsyncStorage.setItem('token', response.data.access_token);
+        navigation.navigate('Home');
+      })
+      .catch(error => {
+        Alert.alert('Error', error.response.data.message);
+      });
   };
   const onSignUp = () => {
     navigation.navigate('SignUp');
@@ -40,13 +67,13 @@ const SignInScreen = () => {
           resizeMode="contain"
         />
         <CustomInput
-          name={'username'}
-          placeholder={'Username'}
+          name={'email'}
+          placeholder={'Email'}
           control={control}
           rules={{
             required: {
               value: true,
-              message: 'Username is required',
+              message: 'Email is required',
             },
           }}
         />
