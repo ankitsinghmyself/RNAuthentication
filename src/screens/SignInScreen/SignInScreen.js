@@ -33,13 +33,6 @@ const SignInScreen = () => {
   }, [navigation]);
 
   const onSignIn = data => {
-    //user already exists
-    //validation
-    if (data.email === '' || data.password === '') {
-      Alert.alert('Please fill all the fields');
-      return;
-    }
-    //sign in
     axios
       .post(`${Config.API_URL}/auth/login`, {
         email: data.email,
