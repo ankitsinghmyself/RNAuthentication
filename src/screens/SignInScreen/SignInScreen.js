@@ -33,6 +33,7 @@ const SignInScreen = () => {
   }, [navigation]);
 
   const onSignIn = data => {
+    console.warn(`${Config.API_URL}/auth/login`);
     axios
       .post(`${Config.API_URL}/auth/login`, {
         email: data.email,
